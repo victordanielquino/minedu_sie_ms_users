@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { hash } from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 import { User } from '../../../common/entities/user.entity';
 import { UserCreateDto, UserUpdateDto } from '../dtos';
@@ -9,6 +9,15 @@ import { UserCreateDto, UserUpdateDto } from '../dtos';
 @Injectable()
 export class UserService {
   constructor(@InjectRepository(User) private _userRepo: Repository<User>) {}
+
+  async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(password, salt);
+  }
+
+  async checkPassword(password, passwordEncript): Promise<boolean> {
+    return await bcrypt.compare(password, passwordEncript);
+  }
 
   async findAll() {
     return await this._userRepo.find();
@@ -23,7 +32,8 @@ export class UserService {
       username: dto.username,
     });
     if (existUser) throw new BadRequestException(`EL usuario ya exite.`);
-    const newUser = await this._userRepo.create(dto);
+    const hash = await this.hashPassword(dto.password);
+    const newUser = await this._userRepo.create({ ...dto, password: hash });
     const user = await this._userRepo.save(newUser);
     delete user.password;
     return user;
@@ -40,7 +50,7 @@ export class UserService {
     return await this._userRepo.remove(user);
   }
 
-  async getOneWithUsername(username: string) {
+  async findByUsername(username: string) {
     return await this._userRepo.findOne({
       where: { username },
     });

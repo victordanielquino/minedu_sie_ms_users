@@ -32,4 +32,18 @@ export class UserController {
   delete(@Payload() id: number) {
     return this._userService.deleteOne(id);
   }
+
+  // METODO DE VALIDACION:
+  @MessagePattern(UserMSG.VALID_USER)
+  async validateUser(@Payload() payload) {
+    const user = await this._userService.findByUsername(payload.username);
+    const isValidPassword = await this._userService.checkPassword(
+      payload.password,
+      user.password,
+    );
+    if (user && isValidPassword) {
+      return user;
+    }
+    return null;
+  }
 }
