@@ -1,8 +1,5 @@
-import { NestFactory, Reflector } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AllExceptionFilter } from './common/filters/http-exception.filter';
 import { Transport } from '@nestjs/microservices';
 import { RabbitMQ } from './common/enums';
 

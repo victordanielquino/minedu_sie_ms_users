@@ -1,0 +1,7 @@
+export enum RoleMSG {
+  CREATE = 'CREATE_ROLE',
+  FIND_ALL = 'FIND_ROLES',
+  FIND_ONE = 'FIND_ROLE',
+  UPDATE = 'UPDATE_ROLE',
+  DELETE = 'DELETE_ROLE',
+}
